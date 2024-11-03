@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Website E-Health</title>
+    <style>
+        /* Reset dan Variabel CSS */
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --background-color: #ecf0f1;
+            --text-color: #2c3e50;
+            --shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        body {
+            background-color: var(--background-color);
+            color: var(--text-color);
+        }
+
+        /* Header Styles */
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 1rem;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 100;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: white;
+        }
+
+        .nav-links {
+            list-style: none;
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        .nav-links a:hover {
+            background-color: var(--secondary-color);
+        }
+
+        /* Dashboard Section */
+        .dashboard {
+            margin-top: 80px;
+            padding: 2rem;
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .health-card {
+            background-color: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+            transition: transform 0.3s;
+        }
+
+        .health-card:hover {
+            transform: translateY(-5px);
+        }
+
+        /* Grafik Kesehatan */
+        .health-chart {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+            margin-top: 2rem;
+        }
+
+        canvas {
+            width: 100% !important;
+            height: 300px !important;
+        }
+
+        /* Form Input Kesehatan */
+        .health-form {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+            margin-top: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        .btn {
+            background-color: var(--secondary-color);
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .btn:hover {
+            background-color: #2980b9;
+        }
+
+        /* Notifikasi */
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: var(--accent-color);
+            color: white;
+            padding: 1rem;
+            border-radius: 5px;
+            box-shadow: var(--shadow);
+            transform: translateX(150%);
+            transition: transform 0.3s;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .dashboard {
+                padding: 1rem;
+            }
+
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">E-Health: Rutinitas Langkah Kaki</div>
+            <ul class="nav-links">
+                <li><a href="#dashboard">Dashboard</a></li>
+                <li><a href="#graphic">Grafik</a></li>
+                <li><a href="#inputdata">Input Data</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="dashboard" id="dashboard">
+        <h1>Dashboard Kesehatan</h1>
+        
+        <div class="dashboard-grid">
+            <div class="health-card" id="steps">
+                <h3>Langkah Harian</h3>
+                <p class="count">0</p>
+                <p>Target: 7,000 Langkah</p>
+            </div>
+    
+            <div class="health-card" id="heart-rate">
+                <h3>Detak Jantung</h3>
+                <p class="count">0</p>
+                <p>BPM</p>
+            </div>
+    
+            <div class="health-card" id="sleep">
+                <h3>Waktu Tidur</h3>
+                <p class="count">0</p>
+                <p>Jam</p>
+            </div>
+        </div>
+    
+        <div class="health-chart" id="graphic">
+            <h2>Grafik Aktivitas Mingguan</h2>
+            <canvas id="activityChart"></canvas>
+        </div>
+    
+        <div class="health-form" id="inputdata">
+            <h2>Input Data Kesehatan</h2>
+            <form id="healthForm">
+                <div class="form-group">
+                    <label for="steps">Jumlah Langkah</label>
+                    <input type="number" id="steps-input" required>
+                </div>
+                <div class="form-group">
+                    <label for="heart-rate">Detak Jantung (BPM)</label>
+                    <input type="number" id="heart-rate-input" required>
+                </div>
+                <div class="form-group">
+                    <label for="sleep">Waktu Tidur (Jam)</label>
+                    <input type="number" id="sleep-input" required>
+                </div>
+                <button type="submit" class="btn">Simpan Data</button>
+            </form>
+        </div>
+    </main>
+    
+    <div class="notification" id="notification">
+        Data berhasil disimpan!
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Fungsi untuk animasi counter
+function animateCount(element, target) {
+    let current = 0;
+    const increment = target / 100;
+    const timer = setInterval(() => {
+        current += increment;
+        element.textContent = Math.round(current);
+        if (current >= target) {
+            element.textContent = target;
+            clearInterval(timer);
+        }
+    }, 10);
+}
+
+// Setup data awal
+const healthData = {
+    'steps': 3000,
+    'heart-rate': 75,  // Mengubah dari heartRate menjadi heart-rate
+    'sleep': 8
+};
+
+// Animasi data awal
+document.querySelectorAll('.health-card').forEach(card => {
+    const countElement = card.querySelector('.count');
+    const target = healthData[card.id]; // Sekarang akan sesuai dengan ID di HTML
+    if (!isNaN(target)) { // Tambahkan pengecekan untuk memastikan nilai valid
+        animateCount(countElement, target);
+    }
+});
+
+
+        // Setup grafik aktivitas
+        const ctx = document.getElementById('activityChart').getContext('2d');
+        const activityChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'],
+                datasets: [{
+                    label: 'Langkah Harian',
+                    data: [7000, 8500, 6800, 9200, 8700, 7600, 8547],
+                    borderColor: '#3498db',
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        // Handle form submission
+        document.getElementById('healthForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            // Update data
+            const steps = parseInt(document.getElementById('steps-input').value);
+            const heartRate = parseInt(document.getElementById('heart-rate-input').value);
+            const sleep = parseFloat(document.getElementById('sleep-input').value);
+
+            // Update cards
+            document.querySelector('#steps .count').textContent = steps;
+            document.querySelector('#heart-rate .count').textContent = heartRate;
+            document.querySelector('#sleep .count').textContent = sleep;
+
+            // Update chart
+            activityChart.data.datasets[0].data.shift();
+            activityChart.data.datasets[0].data.push(steps);
+            activityChart.update();
+
+            // Show notification
+            const notification = document.getElementById('notification');
+            notification.classList.add('show');
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+
+            // Reset form
+            this.reset();
+        });
+
+        // Smooth scroll untuk navigasi
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                target.scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+    </script>
+</body>
+</html>
